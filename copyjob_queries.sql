@@ -1,0 +1,191 @@
+-- ============================================================
+-- COPYJOB SAFE QUERIES FOR BRONZE LAYER
+-- Full table copies with problematic date columns handled
+-- ============================================================
+
+-- ============================================================
+-- WH_LOANS (119M rows)
+-- Excludes: INTPAIDTODATE (not needed, causes errors)
+-- ============================================================
+
+SELECT
+    ACCTNBR,
+    RUNDATE,
+    OCC,
+    STATUS,
+    ORIGBAL,
+    CURRTERM,
+    INTC,
+    PF,
+    DELYR,
+    DELLIFE,
+    LCRATE,
+    OLDPI,
+    ORIGINT,
+    NEXTRATECHG,
+    LOANIDX,
+    RCF,
+    PCF,
+    REMAINTERM,
+    LASTPMTCHGDATE,
+    LASTINTCHGDATE,
+    SOLD,
+    SOLDBAL,
+    GROSSBAL,
+    HOLDBACK,
+    RATECHANGELEADDAYS,
+    PRINCIPALADVAMT,
+    REFINANCEAMT,
+    ORIGDATE,
+    FDICCATDESC,
+    OTSLOANCATDESC,
+    LASTDISBURSDATE,
+    DATELASTMAINT,
+    -- INTPAIDTODATE excluded (not needed, query errors)
+    FHLBPLEDGEDYN,
+    FHLBCLATTYPCD,
+    FHLBCLASSCD,
+    FHLBINDEXCD,
+    FHLBRATECAPCD,
+    FHLBFREQRATEADJCD,
+    FHLB1STRATEADJCD,
+    LOANLIMITYN,
+    REVOLVELOANYN,
+    AVAILBALAMT
+FROM COCCDM.WH_LOANS;
+
+
+-- ============================================================
+-- WH_ACCTCOMMON (254M rows)
+-- Fixes: DATEMAT has 10,863 bad rows (year 0209 to 2113)
+-- ============================================================
+
+SELECT
+    ACCTNBR,
+    EFFDATE,
+    MONTHENDYN,
+    MJACCTTYPCD,
+    CURRMIACCTTYPCD,
+    PRODUCT,
+    CURRACCTSTATCD,
+    CURRACCTSTATEFFDATE,
+    ACCTOPENCURRMONTHYN,
+    ACCTCLOSECURRMONTHYN,
+    BRANCHORGNBR,
+    BRANCHNAME,
+    BANKORGNBR,
+    NOTEINTRATE,
+    NOTENEXTRATECHANGEDATE,
+    NOTERATECHANGECALPERCD,
+    NOTEOPENAMT,
+    NOTEBAL,
+    BOOKBALANCE,
+    NOTEMTDAVGBAL,
+    NOTEINTCALCSCHEDNBR,
+    CALCBALTYPCD,
+    COMPOUNDCALPERCD,
+    DAYSMETHCD,
+    INTMETHCD,
+    INTMINCALCBALTYPCD,
+    RATETYPCD,
+    INTBASE,
+    INTMINBALAMT,
+    -- DATEMAT: Fix invalid dates (year 0209, dates > 2100)
+    CASE
+        WHEN DATEMAT < DATE '1900-01-01' OR DATEMAT > DATE '2100-12-31'
+        THEN NULL
+        ELSE DATEMAT
+    END AS DATEMAT,
+    CURRTERM,
+    CONTRACTDATE,
+    CLOSEDATE,
+    TAXRPTFORORGNBR,
+    TAXRPTFORPERSNBR,
+    ORIGPERSNBR,
+    ORIGINATINGPERSON,
+    ACCTOFFICERNBR,
+    ACCTOFFICER,
+    LOANOFFICERSNBR,
+    LOANOFFICER,
+    MANAGINGOFFICERNBR,
+    MANAGINGOFFICER,
+    NAMEADDR1,
+    NAMEADDR2,
+    NAMEADDR3,
+    NAMEADDR4,
+    NAMEADDR5,
+    OWNERNAME,
+    OWNERSORTNAME,
+    PRIMARYOWNERZIPCD,
+    PRIMARYOWNERZIPCDSUFF,
+    PRIMARYOWNERCITY,
+    PRIMARYOWNERSTATE,
+    DATELASTMAINT,
+    HOMEPHONE,
+    BUSINESSPHONE,
+    TAXIDNBR
+FROM COCCDM.WH_ACCTCOMMON;
+
+
+-- ============================================================
+-- WH_ACCT (262M rows)
+-- Fixes: DATEMAT (same column, apply same fix to be safe)
+-- ============================================================
+
+SELECT
+    ACCTNBR,
+    RUNDATE,
+    STMTACCTNBR,
+    TAXRPTFOROWNYN,
+    TAXRPTFORSIGYN,
+    RETIREMENTYN,
+    MJACCTTYPCD,
+    CURRMIACCTTYPCD,
+    CURRACCTSTATCD,
+    MAILTYPCD,
+    MAILADDRUSECD,
+    OPENFUNDSOURCECD,
+    OWNCD,
+    DATELASTCONTACT,
+    -- DATEMAT: Apply same fix as WH_ACCTCOMMON to be safe
+    CASE
+        WHEN DATEMAT < DATE '1900-01-01' OR DATEMAT > DATE '2100-12-31'
+        THEN NULL
+        ELSE DATEMAT
+    END AS DATEMAT,
+    TAXRPTFORORGNBR,
+    TAXRPTFORPERSNBR,
+    BRANCHORGNBR,
+    NEXTRTXNNBR,
+    CLOSEREASONCD,
+    PASSBOOKYN,
+    ACCTDESC,
+    ADDRFORMATCD,
+    RPT1098YN,
+    RPTPTSYN,
+    CURRTERM,
+    CONTRACTDATE,
+    TRANSACTIONACCTYN,
+    STMTACCTYN,
+    TRUNCATEYN,
+    ANALYSISYN,
+    MAXOVERDRAFTLIMIT,
+    ADDRFORMATDESC,
+    PRIVACYIND,
+    CHECKSYN,
+    CHECKIMAGEYN,
+    DATELASTMAINT,
+    NAICSNBR,
+    NAICSTYPCD,
+    NAICSCD,
+    NAICSDESC,
+    SICCD,
+    SICDESC,
+    SICSUBCD,
+    SICSUBDESC,
+    CREDITSCORE,
+    SCOREDATE,
+    REGEOPTIN,
+    OPENDATE,
+    ADDRNBR
+FROM COCCDM.WH_ACCT;
